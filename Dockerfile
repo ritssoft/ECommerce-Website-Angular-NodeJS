@@ -9,7 +9,12 @@ RUN npm run build --prod
 
 # Serve using nginx
 FROM nginx:alpine
+
+# Copy built Angular app
 COPY --from=build /app/dist/ecommerce /usr/share/nginx/html
+
+# Copy screenshots folder from root into the served directory
+COPY --from=build /app/screenshorts /usr/share/nginx/html/screenshorts
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
