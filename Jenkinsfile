@@ -9,11 +9,6 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-      steps {
-        git 'https://github.com/ritssoft/ECommerce-Website-Angular-NodeJS.git'
-      }
-    }
 
     stage('Build') {
       steps {
