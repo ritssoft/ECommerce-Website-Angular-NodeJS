@@ -6,6 +6,7 @@ pipeline {
     IMAGE_NAME = 'ecommerce-app-image'
     SONARQUBE_SCANNER = 'SonarQubeScanner'  // Jenkins global tool config name
     SNYK_TOKEN = credentials('SNYK_TOKEN')
+    PATH = "/opt/homebrew/bin:$PATH"
   }
 
   stages {
