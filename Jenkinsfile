@@ -38,21 +38,36 @@ pipeline {
       }
     }
 
-    stage('Code Quality') {
-      steps {
-        withSonarQubeEnv('SonarQubeScanner') {
-          sh '''
-            export PATH=/opt/homebrew/bin:$PATH &&
-            sonar-scanner \
-              -Dsonar.projectKey=ritssoft_ECommerce-Website-Angular-NodeJS \
-              -Dsonar.organization=ritssoft \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=$SONAR_AUTH_TOKEN
+    stage('CodeQuality SonarQube Analysis') {
+        steps {
+            withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                sh '''
+                    export PATH=/opt/homebrew/bin:$PATH &&
+                    sonar-scanner \
+                    -Dsonar.projectKey=ritssoft_ECommerce-Website-Angular-NodeJS \
+                    -Dsonar.organization=ritssoft \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.login=$SONAR_TOKEN
           '''
+            }
         }
-      }
-    }
+
+    // stage('Code Quality') {
+    //   steps {
+    //     withSonarQubeEnv('SonarQubeScanner') {
+    //       sh '''
+    //         export PATH=/opt/homebrew/bin:$PATH &&
+    //         sonar-scanner \
+    //           -Dsonar.projectKey=ritssoft_ECommerce-Website-Angular-NodeJS \
+    //           -Dsonar.organization=ritssoft \
+    //           -Dsonar.sources=. \
+    //           -Dsonar.host.url=https://sonarcloud.io \
+    //           -Dsonar.login=$SONAR_AUTH_TOKEN
+    //       '''
+    //     }
+    //   }
+    // }
 
     stage('Security') {
       steps {
