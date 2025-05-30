@@ -44,9 +44,10 @@ pipeline {
           sh '''
             export PATH=/opt/homebrew/bin:$PATH &&
             sonar-scanner \
-              -Dsonar.projectKey=ecommerce \
+              -Dsonar.projectKey=ritssoft_ECommerce-Website-Angular-NodeJS \
+              -Dsonar.organization=ritssoft \
               -Dsonar.sources=. \
-              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=$SONAR_AUTH_TOKEN
           '''
         }
