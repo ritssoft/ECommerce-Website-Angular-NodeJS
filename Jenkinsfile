@@ -7,6 +7,7 @@ pipeline {
     SONARQUBE_SCANNER = 'SonarQubeScanner'  // Jenkins global tool config name
     SNYK_TOKEN = credentials('SNYK_TOKEN')
     PATH = "/opt/homebrew/bin:/usr/local/bin:$PATH"
+    SONAR_AUTH_TOKEN = credentials('SONAR_TOKEN')
   }
 
   stages {
