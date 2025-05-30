@@ -6,7 +6,6 @@ pipeline {
     IMAGE_NAME = 'ecommerce-app-image'
     SONARQUBE_SCANNER = 'SonarQubeScanner'  // Jenkins global tool config name
     SNYK_TOKEN = credentials('SNYK_TOKEN')
-    PATH = "/opt/homebrew/bin:$PATH"
   }
 
   stages {
@@ -14,14 +13,14 @@ pipeline {
     stage('Build') {
       steps {
         dir('server') {
-          sh 'npm install'
+          sh 'export PATH=/opt/homebrew/bin:$PATH && npm install'
         }
         dir('.') {
-          sh 'npm install'
-          sh 'npm run build'
+          sh 'export PATH=/opt/homebrew/bin:$PATH && npm install'
+          sh 'export PATH=/opt/homebrew/bin:$PATH && npm run build'
         }
         script {
-          sh 'docker build -t $IMAGE_NAME .'
+          sh 'export PATH=/opt/homebrew/bin:$PATH && docker build -t $IMAGE_NAME .'
         }
       }
     }
@@ -29,10 +28,10 @@ pipeline {
     stage('Test') {
       steps {
         dir('server') {
-          sh 'npm test || echo "No backend tests defined"'
+          sh 'export PATH=/opt/homebrew/bin:$PATH && npm test || echo "No backend tests defined"'
         }
         dir('.') {
-          sh 'ng test --watch=false --browsers=ChromeHeadless || echo "No frontend tests defined"'
+          sh 'export PATH=/opt/homebrew/bin:$PATH && ng test --watch=false --browsers=ChromeHeadless || echo "No frontend tests defined"'
         }
       }
     }
@@ -40,23 +39,30 @@ pipeline {
     stage('Code Quality') {
       steps {
         withSonarQubeEnv('SonarQubeScanner') {
-          sh 'sonar-scanner -Dsonar.projectKey=ecommerce -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_AUTH_TOKEN'
+          sh '''
+            export PATH=/opt/homebrew/bin:$PATH &&
+            sonar-scanner \
+              -Dsonar.projectKey=ecommerce \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.login=$SONAR_AUTH_TOKEN
+          '''
         }
       }
     }
 
     stage('Security') {
       steps {
-        sh 'npm install -g snyk'
-        sh 'snyk auth $SNYK_TOKEN'
-        sh 'snyk test || echo "Security scan failed. Review report."'
+        sh 'export PATH=/opt/homebrew/bin:$PATH && npm install -g snyk'
+        sh 'export PATH=/opt/homebrew/bin:$PATH && snyk auth $SNYK_TOKEN'
+        sh 'export PATH=/opt/homebrew/bin:$PATH && snyk test || echo "Security scan failed. Review report."'
       }
     }
 
     stage('Deploy') {
       steps {
-        sh 'docker-compose down || true'
-        sh 'docker-compose up -d'
+        sh 'export PATH=/opt/homebrew/bin:$PATH && docker-compose down || true'
+        sh 'export PATH=/opt/homebrew/bin:$PATH && docker-compose up -d'
       }
     }
 
@@ -70,8 +76,9 @@ pipeline {
     stage('Monitoring') {
       steps {
         sh '''
-        docker logs $(docker ps -qf "name=ecommerce") > monitoring.log || echo "Log collection failed"
-        tail -n 10 monitoring.log
+          export PATH=/opt/homebrew/bin:$PATH &&
+          docker logs $(docker ps -qf "name=ecommerce") > monitoring.log || echo "Log collection failed"
+          tail -n 10 monitoring.log
         '''
       }
     }
