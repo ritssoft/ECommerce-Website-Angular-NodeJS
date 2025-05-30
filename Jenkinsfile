@@ -78,8 +78,13 @@ pipeline {
     stage('Monitoring') {
       steps {
         sh '''
-          docker logs $(docker ps -qf "name=ecommerce") > monitoring.log || echo "Log collection failed"
-          tail -n 10 monitoring.log
+            container=$(docker ps -qf "name=ecommerce" | head -n 1)
+            if [ -n "$container" ]; then
+                docker logs $container > monitoring.log || echo "Log collection failed"
+            else
+                echo "No running ecommerce container found" > monitoring.log
+            fi
+            tail -n 10 monitoring.log
         '''
       }
     }
