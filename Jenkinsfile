@@ -12,7 +12,7 @@ pipeline {
 
   stages {
 
-    stage('Build') {
+    stage('NPM Build') {
       steps {
         dir('server') {
           sh 'npm install'
@@ -27,7 +27,7 @@ pipeline {
       }
     }
 
-    stage('Test') {
+    stage('NPM Test') {
       steps {
         dir('server') {
           sh 'npm test || echo "No backend tests defined"'
@@ -38,7 +38,7 @@ pipeline {
       }
     }
 
-    stage('CodeQuality SonarQube Analysis') {
+    stage('CodeQuality SonarQube Analysis - SAST') {
       steps {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
           sh '''
@@ -53,7 +53,7 @@ pipeline {
       }
     }
 
-    stage('Security') {
+    stage('Security - Synk Test SCA') {
       steps {
         sh 'npm install -g snyk'
         sh 'snyk auth $SNYK_TOKEN'
@@ -61,7 +61,7 @@ pipeline {
       }
     }
 
-    stage('Deploy') {
+    stage('Deploy Docker files') {
       steps {
         sh 'docker-compose down || true'
         sh 'docker-compose up -d'
@@ -75,7 +75,7 @@ pipeline {
       }
     }
 
-    stage('Monitoring') {
+    stage('Monitoring logs') {
       steps {
         sh '''
             container=$(docker ps -qf "name=ecommerce" | head -n 1)
