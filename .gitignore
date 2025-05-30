@@ -37,6 +37,7 @@ yarn-error.log
 testem.log
 /typings
 .scannerwork/
+/server/node_modules
 
 # System files
 .DS_Store
